@@ -1,0 +1,23 @@
+What is the goal of this project?
+    - I want to make a machine learning model that is designed to
+        essentially predict which team is going to win the game
+
+How will you collect the data?
+    - I am going to create a python script that will navigate
+        through https://www.espn.com/mlb/schedule/_/[DATE OF GAMES]
+    - It will iterate through and collect the scores and that will be
+        the outputs we want from the data
+    - Each game has information that will essentially be our inputs
+        for the model to train on
+    - This is going be a work of web scraping to collect that data
+        and store it into a type of data format (JSON, CSV, etc)
+
+What kind of machine learning algorithm will you be using?
+    - I will be using the basic Linear Regression Model because
+        the inputs have a strong correlation on the output of the game
+
+What are the steps for the project?
+    1) Research methods of web scraping using python and see
+        which method is the most efficient for our project
+        - We will make a separate script to fetch all the data
+            and store into a CSV file
