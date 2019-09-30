@@ -5,7 +5,7 @@ Python language using sci-kit learn and Selenium to scrape mlb websites and coll
 The machine learning model is designed to essentially predict which team is going to win the game
 
 # How will the data be collected?
-- A python script will navigate through https://www.espn.com/mlb/schedule/_/YYYYMMDD
+- A python script will navigate through <a href="http://example.com">https://www.espn.com/mlb/schedule/_/20190320</a>
 - It will iterate through and collect the scores and that will be the outputs we want from the data
 - Each game has information that will essentially be our inputs for the model to train on
 - This is going be a work of web scraping to collect that data and store it into a type of data format (JSON, CSV, etc
