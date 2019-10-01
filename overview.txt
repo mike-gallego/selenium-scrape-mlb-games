@@ -21,3 +21,6 @@ What are the steps for the project?
         which method is the most efficient for our project
         - We will make a separate script to fetch all the data
             and store into a CSV file
+        - Scrape each date start form March 20, 2019
+        - Scrape each game in each date
+        - Scrape each stat from those games
