@@ -38,6 +38,7 @@ while True:
                 browser.get(game_link)
 
                 away = True
+
                 away_batting_average = 0.0
                 away_on_base_percentage = 0.0
                 away_slug_percentage = 0.0
@@ -125,12 +126,25 @@ while True:
                 away_on_base_percentage = away_on_base_percentage / len(away_team_players)
                 away_slug_percentage = away_slug_percentage / len(away_team_players)
 
+                away_batting_average = round(away_batting_average, 3)
+                away_on_base_percentage = round(away_on_base_percentage, 3)
+                away_slug_percentage = round(away_slug_percentage, 3)
+
                 home_batting_average = home_batting_average / len(home_team_players)
                 home_on_base_percentage = home_on_base_percentage / len(home_team_players)
                 home_slug_percentage = home_slug_percentage / len(home_team_players)
 
-                print('The away team is {}, with {} at bats, {} runs, {} hits, {} rbis, {} walks, {:0.3f} avg, {:0.3f} obp, and {:0.3f} slg'.format(away_team, away_at_bats, away_runs, away_hits, away_rbis, away_walks, round(away_batting_average, 3), round(away_on_base_percentage, 3), round(away_slug_percentage, 3)))
-                print('The home team is {}, with {} at bats, {} runs, {} hits, {} rbis, {} walks, {:0.3f} avg, {:0.3f} obp, and {:0.3f} slg'.format(home_team, home_at_bats, home_runs, home_hits, home_rbis, home_walks, round(home_batting_average, 3), round(home_on_base_percentage, 3), round(home_slug_percentage, 3)))
+                home_batting_average = round(home_batting_average, 3)
+                home_on_base_percentage = round(home_on_base_percentage, 3)
+                home_slug_percentage = round(home_slug_percentage, 3)
+
+                print('The away team is {}, with {} at bats, {} runs, {} hits, {} rbis, {} walks, {:0.3f} avg, {:0.3f} obp, and {:0.3f} slg'.format(away_team, away_at_bats, away_runs, away_hits, away_rbis, away_walks, away_batting_average, away_on_base_percentage, away_slug_percentage))
+                print('The home team is {}, with {} at bats, {} runs, {} hits, {} rbis, {} walks, {:0.3f} avg, {:0.3f} obp, and {:0.3f} slg'.format(home_team, home_at_bats, home_runs, home_hits, home_rbis, home_walks, home_batting_average, home_on_base_percentage, home_slug_percentage))
+
+                away_win = int(away_runs) > int(home_runs)
+
+                with open('MLB_GAMES_OVERVIEW.txt', 'a') as f:
+                    f.write('{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}\n{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}\n'.format(away_team, int(away), away_at_bats, away_runs, away_hits, away_rbis, away_walks, away_batting_average, away_on_base_percentage, away_slug_percentage, int(away_win), home_team, int(not away), home_at_bats, home_runs, home_hits, home_rbis, home_walks, home_batting_average, home_on_base_percentage, home_slug_percentage, int(not away_win)))
 
             except Exception as e:
                 browser.refresh()
