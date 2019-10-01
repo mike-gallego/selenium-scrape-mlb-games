@@ -36,21 +36,21 @@ while True:
         for game_link in game_links:
             try:
                 browser.get(game_link)
+
                 away = True
-                away_batting_average = 0
-                away_on_base_percentage = 0
-                away_slug_percentage = 0
+                away_batting_average = 0.0
+                away_on_base_percentage = 0.0
+                away_slug_percentage = 0.0
 
-                home_team = ''
-                home_at_bats = 0
-                home_runs = 0
-                home_hits = 0
-                home_rbis = 0
-                home_walks = 0
-                home_batting_average = 0
+                home_batting_average = 0.0
+                home_on_base_percentage = 0.0
+                home_slug_percentage = 0.0
 
-                away_team_scrape = browser.find_element_by_class_name('team-info-wrapper').find_elements_by_tag_name('span')[2]
+                away_team_scrape = browser.find_elements_by_class_name('team__content')[0].find_element_by_class_name('abbrev')
                 away_team = away_team_scrape.get_attribute('innerHTML')
+
+                home_team_scrape = browser.find_elements_by_class_name('team__content')[1].find_element_by_class_name('abbrev')
+                home_team = home_team_scrape.get_attribute('innerHTML')
 
                 away_totals_scrape = browser.find_elements_by_class_name('totals')[0].find_elements_by_tag_name('td')[2:7]
                 away_at_bats = away_totals_scrape[0].get_attribute('innerHTML')
@@ -59,7 +59,16 @@ while True:
                 away_rbis = away_totals_scrape[3].get_attribute('innerHTML')
                 away_walks = away_totals_scrape[4].get_attribute('innerHTML')
 
-                away_team_players = browser.find_elements_by_class_name('athletes')[:11]
+                home_totals_scrape = browser.find_elements_by_class_name('totals')[2].find_elements_by_tag_name('td')[2:7]
+                home_at_bats = home_totals_scrape[0].get_attribute('innerHTML')
+                home_runs = home_totals_scrape[1].get_attribute('innerHTML')
+                home_hits = home_totals_scrape[2].get_attribute('innerHTML')
+                home_rbis = home_totals_scrape[3].get_attribute('innerHTML')
+                home_walks = home_totals_scrape[4].get_attribute('innerHTML')
+
+                away_team_players = browser.find_elements_by_xpath(".//table[contains(@data-behavior, 'responsive_table')]")[2].find_elements_by_tag_name('tbody')
+                home_team_players = browser.find_elements_by_xpath(".//table[contains(@data-behavior, 'responsive_table')]")[4].find_elements_by_tag_name('tbody')
+
                 for away_player in away_team_players:
                     if len(away_player.find_elements_by_tag_name('td')) == 12:
                         avg_obp_slg = away_player.find_elements_by_tag_name('td')[9:12]
@@ -86,14 +95,46 @@ while True:
                             except ValueError:
                                 away_slug_percentage += 0.0
 
+                for home_player in home_team_players:
+                    if len(home_player.find_elements_by_tag_name('td')) == 12:
+                        home_avg_obp_slg = home_player.find_elements_by_tag_name('td')[9:12]
+                    else:
+                        home_avg_obp_slg = home_player.find_elements_by_tag_name('td')[8:11]
+                    print('the length of avg_obp_slg is:', len(home_avg_obp_slg))
+                    for index, val in enumerate(home_avg_obp_slg):
+                        if index == 0:
+                            try:
+                                home_batting_average += float(home_avg_obp_slg[index].get_attribute('innerHTML'))
+                                print('The sum of batting averages so far:', home_batting_average)
+                            except ValueError:
+                                home_batting_average += 0.0
+                        elif index == 1:
+                            try:
+                                home_on_base_percentage += float(home_avg_obp_slg[index].get_attribute('innerHTML'))
+                                print('The sum of on base percentage so far:', home_on_base_percentage)
+                            except ValueError:
+                                home_on_base_percentage += 0.0
+                        elif index == 2:
+                            try:
+                                home_slug_percentage += float(home_avg_obp_slg[index].get_attribute('innerHTML'))
+                                print('The sum of slugging percentage so far:', home_slug_percentage)
+                            except ValueError:
+                                home_slug_percentage += 0.0
+
                 away_batting_average = away_batting_average / len(away_team_players)
                 away_on_base_percentage = away_on_base_percentage / len(away_team_players)
                 away_slug_percentage = away_slug_percentage / len(away_team_players)
 
-                print('The away team is {}, with {} at bats, {} runs, {} hits, {} rbis, {} walks, {:0.3f} avg, {:0.3f} obp, and {:0.3f} slg'.format(away_team, away_at_bats, away_runs, away_hits, away_rbis, away_walks, round(away_batting_average, 3), round(away_on_base_percentage, 3), round(away_slug_percentage, 3)))
+                home_batting_average = home_batting_average / len(home_team_players)
+                home_on_base_percentage = home_on_base_percentage / len(home_team_players)
+                home_slug_percentage = home_slug_percentage / len(home_team_players)
 
-            except:
+                print('The away team is {}, with {} at bats, {} runs, {} hits, {} rbis, {} walks, {:0.3f} avg, {:0.3f} obp, and {:0.3f} slg'.format(away_team, away_at_bats, away_runs, away_hits, away_rbis, away_walks, round(away_batting_average, 3), round(away_on_base_percentage, 3), round(away_slug_percentage, 3)))
+                print('The home team is {}, with {} at bats, {} runs, {} hits, {} rbis, {} walks, {:0.3f} avg, {:0.3f} obp, and {:0.3f} slg'.format(home_team, home_at_bats, home_runs, home_hits, home_rbis, home_walks, round(home_batting_average, 3), round(home_on_base_percentage, 3), round(home_slug_percentage, 3)))
+
+            except Exception as e:
                 browser.refresh()
+                print('browser has refreshed because of error: {}'.format(e))
 
         # Increment Date
         date = datetime.datetime.strptime(date, '%Y%m%d')
