@@ -34,32 +34,66 @@ while True:
             game_links[index] = game_link.replace('game?', 'boxscore?')
 
         for game_link in game_links:
-            browser.get(game_link)
-            away = True
-            away_batting_average = 0
+            try:
+                browser.get(game_link)
+                away = True
+                away_batting_average = 0
+                away_on_base_percentage = 0
+                away_slug_percentage = 0
 
-            home_team = ''
-            home_at_bats = 0
-            home_runs = 0
-            home_hits = 0
-            home_rbis = 0
-            home_walks = 0
-            home_batting_average = 0
+                home_team = ''
+                home_at_bats = 0
+                home_runs = 0
+                home_hits = 0
+                home_rbis = 0
+                home_walks = 0
+                home_batting_average = 0
 
-            away_team_scrape = browser.find_element_by_class_name('team-info-wrapper').find_elements_by_tag_name('span')[2]
-            away_team = away_team_scrape.get_attribute('innerHTML')
+                away_team_scrape = browser.find_element_by_class_name('team-info-wrapper').find_elements_by_tag_name('span')[2]
+                away_team = away_team_scrape.get_attribute('innerHTML')
 
-            away_totals_scrape = browser.find_elements_by_class_name('totals')[0].find_elements_by_tag_name('td')[2:7]
-            away_at_bats = away_totals_scrape[0].get_attribute('innerHTML')
-            away_runs = away_totals_scrape[1].get_attribute('innerHTML')
-            away_hits = away_totals_scrape[2].get_attribute('innerHTML')
-            away_rbis = away_totals_scrape[3].get_attribute('innerHTML')
-            away_walks = away_totals_scrape[4].get_attribute('innerHTML')
+                away_totals_scrape = browser.find_elements_by_class_name('totals')[0].find_elements_by_tag_name('td')[2:7]
+                away_at_bats = away_totals_scrape[0].get_attribute('innerHTML')
+                away_runs = away_totals_scrape[1].get_attribute('innerHTML')
+                away_hits = away_totals_scrape[2].get_attribute('innerHTML')
+                away_rbis = away_totals_scrape[3].get_attribute('innerHTML')
+                away_walks = away_totals_scrape[4].get_attribute('innerHTML')
 
-            print('The away team is {}, with {} at bats, {} runs, {} hits, {} rbis and {} walks'.format(away_team, away_at_bats, away_runs, away_hits, away_rbis, away_walks))
+                away_team_players = browser.find_elements_by_class_name('athletes')[:11]
+                for away_player in away_team_players:
+                    if len(away_player.find_elements_by_tag_name('td')) == 12:
+                        avg_obp_slg = away_player.find_elements_by_tag_name('td')[9:12]
+                    else:
+                        avg_obp_slg = away_player.find_elements_by_tag_name('td')[8:11]
+                    print('the length of avg_obp_slg is:', len(avg_obp_slg))
+                    for index, val in enumerate(avg_obp_slg):
+                        if index == 0:
+                            try:
+                                away_batting_average += float(avg_obp_slg[index].get_attribute('innerHTML'))
+                                print('The sum of batting averages so far:', away_batting_average)
+                            except ValueError:
+                                away_batting_average += 0.0
+                        elif index == 1:
+                            try:
+                                away_on_base_percentage += float(avg_obp_slg[index].get_attribute('innerHTML'))
+                                print('The sum of on base percentage so far:', away_on_base_percentage)
+                            except ValueError:
+                                away_on_base_percentage += 0.0
+                        elif index == 2:
+                            try:
+                                away_slug_percentage += float(avg_obp_slg[index].get_attribute('innerHTML'))
+                                print('The sum of slugging percentage so far:', away_slug_percentage)
+                            except ValueError:
+                                away_slug_percentage += 0.0
 
+                away_batting_average = away_batting_average / len(away_team_players)
+                away_on_base_percentage = away_on_base_percentage / len(away_team_players)
+                away_slug_percentage = away_slug_percentage / len(away_team_players)
 
+                print('The away team is {}, with {} at bats, {} runs, {} hits, {} rbis, {} walks, {:0.3f} avg, {:0.3f} obp, and {:0.3f} slg'.format(away_team, away_at_bats, away_runs, away_hits, away_rbis, away_walks, round(away_batting_average, 3), round(away_on_base_percentage, 3), round(away_slug_percentage, 3)))
 
+            except:
+                browser.refresh()
 
         # Increment Date
         date = datetime.datetime.strptime(date, '%Y%m%d')
