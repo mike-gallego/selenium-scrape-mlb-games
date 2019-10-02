@@ -10,9 +10,7 @@ path_to_chromedriver = 'chromedriver.exe'
 browser = webdriver.Chrome(executable_path=path_to_chromedriver)
 
 # Start date
-date = datetime.datetime(2019, 3, 30)
-
-# The data we want
+date = datetime.datetime(2019, 6, 29)
 
 
 while True:
@@ -165,7 +163,7 @@ while True:
         date = date + timedelta(days=1)
 
         # Condition to check schedule has reached season limit
-        if date > datetime.datetime(2019, 4, 29):
+        if date > datetime.datetime(2019, 10, 1):
             print('data limit reached')
             break
     except requests.exceptions.Timeout:
