@@ -10,7 +10,7 @@ path_to_chromedriver = 'chromedriver.exe'
 browser = webdriver.Chrome(executable_path=path_to_chromedriver)
 
 # Start date
-date = datetime.datetime(2019, 6, 29)
+date = datetime.datetime(2019, 3, 20)
 
 
 while True:
@@ -75,7 +75,6 @@ while True:
                 home_walks = home_totals_scrape[4].get_attribute('innerHTML')
 
                 away_team_players = browser.find_element_by_css_selector('div.boxscore-2017__wrap.boxscore-2017__wrap--away').find_elements_by_tag_name('table')[0].find_elements_by_tag_name('tbody')
-                #home_team_players = browser.find_elements_by_xpath(".//table[contains(@data-behavior, 'responsive_table')]")[4].find_elements_by_tag_name('tbody')
                 home_team_players = browser.find_element_by_css_selector('div.boxscore-2017__wrap.boxscore-2017__wrap--home').find_elements_by_tag_name('table')[0].find_elements_by_tag_name('tbody')
 
                 for away_player in away_team_players:
@@ -151,7 +150,7 @@ while True:
 
                 away_win = int(away_runs) > int(home_runs)
 
-                with open('mlb_games_overview', 'a') as f:
+                with open('mlb_games_overview.txt.txt', 'a') as f:
                     f.write('{},{},{},{},{},{},{},{},{},{},{},{}\n{},{},{},{},{},{},{},{},{},{},{},{}\n'.format(date, away_team, int(away), away_at_bats, away_runs, away_hits, away_rbis, away_walks, away_batting_average, away_on_base_percentage, away_slug_percentage, int(away_win), date, home_team, int(not away), home_at_bats, home_runs, home_hits, home_rbis, home_walks, home_batting_average, home_on_base_percentage, home_slug_percentage, int(not away_win)))
 
             except Exception as e:
@@ -163,7 +162,7 @@ while True:
         date = date + timedelta(days=1)
 
         # Condition to check schedule has reached season limit
-        if date > datetime.datetime(2019, 10, 1):
+        if date > datetime.datetime.now():
             print('data limit reached')
             break
     except requests.exceptions.Timeout:
