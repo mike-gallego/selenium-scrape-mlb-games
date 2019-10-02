@@ -3,13 +3,14 @@ import requests
 import datetime
 from datetime import timedelta
 from selenium import webdriver
+from selenium.common.exceptions import *
 
 # Start browser
 path_to_chromedriver = 'chromedriver.exe'
 browser = webdriver.Chrome(executable_path=path_to_chromedriver)
 
 # Start date
-date = datetime.datetime(2019, 3, 20)
+date = datetime.datetime(2019, 3, 30)
 
 # The data we want
 
@@ -25,9 +26,17 @@ while True:
         game_links = []
         today_schedule = browser.find_element_by_id('sched-container').find_elements_by_class_name('responsive-table-wrap')[0]
         games = today_schedule.find_element_by_tag_name('tbody').find_elements_by_tag_name('tr')
+        score = []
         for game in games:
-            score = game.find_element_by_xpath(".//a[contains(@href, 'mlb/game')]")
-            game_links.append(score.get_attribute('href'))
+            try:
+                score = game.find_element_by_xpath(".//a[contains(@href, 'mlb/game')]")
+                if not score.get_attribute('innerHTML') == 'Postponed':
+                    game_links.append(score.get_attribute('href'))
+            except NoSuchElementException:
+                browser.refresh()
+                print('No games were found')
+
+
 
         # Replace part of the URL to have it navigate to the Box Score
         for index, game_link in enumerate(game_links):
@@ -67,8 +76,9 @@ while True:
                 home_rbis = home_totals_scrape[3].get_attribute('innerHTML')
                 home_walks = home_totals_scrape[4].get_attribute('innerHTML')
 
-                away_team_players = browser.find_elements_by_xpath(".//table[contains(@data-behavior, 'responsive_table')]")[2].find_elements_by_tag_name('tbody')
-                home_team_players = browser.find_elements_by_xpath(".//table[contains(@data-behavior, 'responsive_table')]")[4].find_elements_by_tag_name('tbody')
+                away_team_players = browser.find_element_by_css_selector('div.boxscore-2017__wrap.boxscore-2017__wrap--away').find_elements_by_tag_name('table')[0].find_elements_by_tag_name('tbody')
+                #home_team_players = browser.find_elements_by_xpath(".//table[contains(@data-behavior, 'responsive_table')]")[4].find_elements_by_tag_name('tbody')
+                home_team_players = browser.find_element_by_css_selector('div.boxscore-2017__wrap.boxscore-2017__wrap--home').find_elements_by_tag_name('table')[0].find_elements_by_tag_name('tbody')
 
                 for away_player in away_team_players:
                     if len(away_player.find_elements_by_tag_name('td')) == 12:
@@ -143,8 +153,8 @@ while True:
 
                 away_win = int(away_runs) > int(home_runs)
 
-                with open('MLB_GAMES_OVERVIEW.txt', 'a') as f:
-                    f.write('{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}\n{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}\n'.format(away_team, int(away), away_at_bats, away_runs, away_hits, away_rbis, away_walks, away_batting_average, away_on_base_percentage, away_slug_percentage, int(away_win), home_team, int(not away), home_at_bats, home_runs, home_hits, home_rbis, home_walks, home_batting_average, home_on_base_percentage, home_slug_percentage, int(not away_win)))
+                with open('mlb_games_overview', 'a') as f:
+                    f.write('{},{},{},{},{},{},{},{},{},{},{},{}\n{},{},{},{},{},{},{},{},{},{},{},{}\n'.format(date, away_team, int(away), away_at_bats, away_runs, away_hits, away_rbis, away_walks, away_batting_average, away_on_base_percentage, away_slug_percentage, int(away_win), date, home_team, int(not away), home_at_bats, home_runs, home_hits, home_rbis, home_walks, home_batting_average, home_on_base_percentage, home_slug_percentage, int(not away_win)))
 
             except Exception as e:
                 browser.refresh()
@@ -161,9 +171,7 @@ while True:
     except requests.exceptions.Timeout:
         continue
     except requests.exceptions.HTTPError as err:
-        # Format Date into YYYYMMDD
-        date = datetime.datetime.strptime(date, '%Y%m%d')
-        date = date + timedelta(days=1)
+        browser.refresh()
         print('Web page unavailable...\nIncrementing one day\n', date)
         continue
     except requests.exceptions.RequestException as e:
