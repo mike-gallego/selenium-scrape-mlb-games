@@ -14,8 +14,9 @@ x = np.array(data.drop([predict], 1))
 
 y = np.array(data[predict])
 
-#x_train, x_test, y_train, y_test = sklearn.model_selection.train_test_split(x, y, test_size=0.1)
+x_train, x_test, y_train, y_test = sklearn.model_selection.train_test_split(x, y, test_size=0.1)
 
+'''
 best = 0
 for _ in range(20000):
     x_train, x_test, y_train, y_test = sklearn.model_selection.train_test_split(x, y, test_size=0.1)
@@ -28,6 +29,7 @@ for _ in range(20000):
         print('The new best is: %s' % best)
         with open('mlb_prediction_model.pickle', 'wb') as f:
             pickle.dump(linear, f)
+'''
 
 pickle_in = open('mlb_prediction_model.pickle', 'rb')
 linear = pickle.load(pickle_in)
